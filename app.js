@@ -20,7 +20,7 @@ dotenv.config();
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
-
+app.engine('html', require('ejs').renderFile);
 
 // Homepage Route
 // app.get('/', (req, res) => {
