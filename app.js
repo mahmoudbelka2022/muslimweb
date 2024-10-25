@@ -23,7 +23,7 @@ app.use(session({ secret: 'secret-key', resave: false, saveUninitialized: false 
 
 // Set view engine to EJS
 app.set('view engine', 'ejs');
-
+app.set('views', path.join(__dirname, 'views'));
 // Homepage Route
 app.get('/', (req, res) => {
   res.render('index');
@@ -55,8 +55,8 @@ app.get('/', (req, res) => {
 //   }
 // });
 
-app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/public/register");
+app.get("/register", (req, res) => {
+    res.render('register');
   });
 
   app.post('/register', async (req, res) => {
