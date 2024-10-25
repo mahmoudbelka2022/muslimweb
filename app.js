@@ -2,9 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
-const { Pool } = require('pg');
+const { Client } = require('pg');
 const dotenv = require('dotenv');
 const app = express();
+
 dotenv.config();
 
 
@@ -19,15 +20,12 @@ dotenv.config();
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
-app.use(session({ secret: 'secret-key', resave: false, saveUninitialized: false }));
 
-// Set view engine to EJS
-app.set('view engine', 'ejs');
-// app.set('views', path.join(__dirname, 'views'));
+
 // Homepage Route
-app.get('/', (req, res) => {
-  res.render('index');
-});
+// app.get('/', (req, res) => {
+//   res.render('index');
+// });
 
 // Register Page
 // app.get('/register', (req, res) => {
@@ -54,14 +52,15 @@ app.get('/', (req, res) => {
 //     res.status(500).send('Error registering user.');
 //   }
 // });
+// Register route definition
 
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/views/register.ejs");
+  res.sendFile(__dirname + "/public/register.html");
 
   });
 
   app.post('/register', async (req, res) => {
-    const pool = new Pool({
+    const client = new Client({
       host : process.env.DB_HOST,
       port : process.env.DB_PORT,
       user : process.env.DB_USER,
@@ -79,7 +78,7 @@ app.get("/", (req, res) => {
 
    await client.end();
    console.log("Data inserted successfully");
-   res.redirect('/dashboard.ejs');
+   res.redirect('/dashboard.html');
 });
 
 // Login Page
