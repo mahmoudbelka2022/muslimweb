@@ -3,15 +3,18 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const { Pool } = require('pg');
-
+const dotenv = require('dotenv');
 const app = express();
-const pool = new Pool({
-        user: 'hr',
-        host: 'room-reservation-qa.cxvqfpt4mc2y.us-east-1.rds.amazonaws.com',
-        database: 'hr',
-        password: 'hr',
-        port: 5432,
-});
+dotenv.config();
+
+
+// const pool = new Pool({
+//         user: 'hr',
+//         host: 'room-reservation-qa.cxvqfpt4mc2y.us-east-1.rds.amazonaws.com',
+//         database: 'hr',
+//         password: 'hr',
+//         port: 5432,
+// });
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -27,29 +30,55 @@ app.get('/', (req, res) => {
 });
 
 // Register Page
-app.get('/register', (req, res) => {
-  res.render('register');
+// app.get('/register', (req, res) => {
+//   res.render('register');
+// });
+//
+// // Handle Registration
+// app.post('/register', async (req, res) => {
+//   const { username, email, password } = req.body;
+//
+//   if (!username || !email || !password) {
+//     return res.status(400).send('All fields are required.');
+//   }
+//
+//   try {
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     const query = 'INSERT INTO usersislam (username, email, password) VALUES ($1, $2, $3) RETURNING *';
+//     const result = await pool.query(query, [username, email, hashedPassword]);
+//
+//     req.session.username = username;
+//     res.redirect('/dashboard');
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Error registering user.');
+//   }
+// });
+
+app.get("/", (req, res) => {
+    res.sendFile(__dirname + "/public/register.ejs");
+  });
+
+  app.post('/register', async (req, res) => {
+    const pool = new Pool({
+      host : process.env.DB_HOST,
+      port : process.env.DB_PORT,
+      user : process.env.DB_USER,
+      password : process.env.DB_PASSWORD,
+      database : process.env.DB_NAME,
+
 });
+  await client.connect();
 
-// Handle Registration
-app.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
+   const { username, email, password } = req.body;
 
-  if (!username || !email || !password) {
-    return res.status(400).send('All fields are required.');
-  }
+   const result = await client.query(
+  'INSERT INTO usersislam (username, email, password) VALUES ($1, $2, $3)',[username, email, password]
+);
 
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const query = 'INSERT INTO usersislam (username, email, password) VALUES ($1, $2, $3) RETURNING *';
-    const result = await pool.query(query, [username, email, hashedPassword]);
-
-    req.session.username = username;
-    res.redirect('/dashboard');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error registering user.');
-  }
+   await client.end();
+   console.log("Data inserted successfully");
+   res.redirect('/dashboard.ejs');
 });
 
 // Login Page
