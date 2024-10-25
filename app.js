@@ -56,7 +56,7 @@ app.get('/', (req, res) => {
 // });
 
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/public/register.ejs");
+    res.sendFile(__dirname + "/public/register");
   });
 
   app.post('/register', async (req, res) => {
